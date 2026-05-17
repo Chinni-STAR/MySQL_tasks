@@ -284,7 +284,6 @@ mysql> SELECT ORDER_ID,QUANTITY_ORDERED FROM ORDER_DETAILS WHERE QUANTITY_ORDERE
 +----------+------------------+
 1 row in set (0.01 sec)
 
-mysql> -- 2.FIND HOW MANY MEMBERS ARE PAYMENT DONE 
 mysql> -- 2.Show all payment methods used for books
 mysql> SELECT ORDER_ID,PAYMENT_DATE,PAYMENT_METHOD FROM PAYMENTS WHERE AMOUNT>0; 
 +----------+--------------+----------------+
@@ -446,8 +445,7 @@ mysql> SELECT B.TITLE,
 +-------------------------+------------+
 3 rows in set (0.00 sec)
 
-mysql> 2.Find books whose price is greater than the lowest priced book
-    -> ^C
+
 mysql> -- 2.Find books whose price is greater than the lowest priced book
 mysql> SELECT TITLE, PRICE  FROM BOOKS 
     -> WHERE PRICE >
@@ -478,15 +476,7 @@ mysql> SELECT B.TITLE  FROM BOOKS B
 3 rows in set (0.03 sec)
 
 mysql> -- 4.Find customers who made payments greater than average payments
-mysql> SELECT DISTINCT C.NAME,
-    -> P.AMOUNT FROM CUSTOMERS C 
-    -> JOIN ORDERS O  ON C.CUSTOMER_ID = O.CUSTOMER_ID 
-    -> JOIN PAYMENTS P  ON O.ORDER_ID = P.ORDER_ID 
-    -> WHERE P.AMOUNT >
-    -> ( 
-    ->     SELECT AVG(AMOUNT)
-    ->     FROM PAYMENTS
-    -> ^C
+
 mysql> SELECT DISTINCT C.NAME,P.AMOUNT FROM CUSTOMERS C
     -> JOIN ORDERS O  ON C.CUSTOMER_ID = O.CUSTOMER_ID 
     -> JOIN PAYMENTS P  ON O.ORDER_ID = P.ORDER_ID 
