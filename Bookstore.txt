@@ -1,0 +1,527 @@
+mysql> CREATE DATABASE IF NOT EXISTS bookstore_db;
+Query OK, 1 row affected (0.06 sec)
+
+mysql> 
+mysql> USE bookstore_db;
+Database changed
+mysql> 
+mysql> -- 1. Authors
+mysql> CREATE TABLE Authors (
+    ->     author_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     author_name VARCHAR(100) NOT NULL,
+    ->     bio TEXT
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> 
+mysql> -- 2. Genres
+mysql> CREATE TABLE Genres (
+    ->     genre_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     genre_name VARCHAR(50) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> 
+mysql> -- 3. Customers
+mysql> CREATE TABLE Customers (
+    ->     customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     name VARCHAR(100),
+    ->     email VARCHAR(100) UNIQUE,
+    ->     city VARCHAR(50),
+    ->     join_date DATE
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> 
+mysql> -- 4. Books
+mysql> CREATE TABLE Books (
+    ->     book_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     title VARCHAR(150),
+    ->     price DECIMAL(10,2),
+    ->     stock_quantity INT,
+    ->     author_id INT,
+    ->     genre_id INT,
+    ->     
+    ->     FOREIGN KEY (author_id) REFERENCES Authors(author_id),
+    ->     FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> 
+mysql> -- 5. Orders
+mysql> CREATE TABLE Orders (
+    ->     order_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     order_date DATE,
+    ->     customer_id INT,
+    ->     
+    ->     FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> 
+mysql> -- 6. Order_Details
+mysql> CREATE TABLE Order_Details (
+    ->     detail_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     order_id INT,
+    ->     book_id INT,
+    ->     quantity_ordered INT,
+    ->     price_at_time_of_order DECIMAL(10,2),
+    ->     
+    ->     FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    ->     FOREIGN KEY (book_id) REFERENCES Books(book_id)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql>-- 7.Publishers
+mysql> CREATE TABLE Publishers (
+    ->     publisher_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     publisher_name VARCHAR(100),
+    ->     country VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> -- 8.Payments
+mysql> CREATE TABLE Payments (
+    ->     payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     order_id INT,
+    ->     payment_date DATE,
+    ->     payment_method VARCHAR(50),
+    ->     amount DECIMAL(10,2),
+    -> 
+    ->     FOREIGN KEY (order_id)
+    ->     REFERENCES Orders(order_id)
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+
+mysql> -- Insert Authors
+mysql> INSERT INTO Authors (author_name, bio) VALUES
+    -> ('Chetan Bhagat', 'Indian author known for 5 Point Someone.'),
+    -> ('Arundhati Roy', 'Winner of the Man Booker Prize.'),
+    -> ('R.K. Narayan', 'Creator of Malgudi Days.'),
+    -> ('Amish Tripathi', 'Known for the Shiva Trilogy.');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> -- Insert Genres
+mysql> INSERT INTO Genres (genre_name) VALUES
+    -> ('Fiction'),
+    -> ('Mythology'),
+    -> ('History'),
+    -> ('Romance');
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> -- Insert Books
+mysql> INSERT INTO Books
+    -> (title, price, stock_quantity, author_id, genre_id)
+    -> VALUES
+    -> ('Five Point Someone', 250.00, 50, 1, 1),
+    -> ('2 States', 300.00, 40, 1, 4),
+    -> ('The God of Small Things', 450.00, 20, 2, 1),
+    -> ('Malgudi Days', 200.00, 100, 3, 1),
+    -> ('The Immortals of Meluha', 399.00, 60, 4, 2);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> -- Insert Customers
+mysql> INSERT INTO Customers
+    -> (name, email, city, join_date)
+    -> VALUES
+    -> ('Aarav Sharma', 'aarav@gmail.com', 'Mumbai', '2023-01-10'),
+    -> ('Diya Patel', 'diya.p@yahoo.com', 'Ahmedabad', '2023-02-15'),
+    -> ('Vihaan Reddy', 'vihaan.r@outlook.com', 'Hyderabad', '2023-03-20'),
+    -> ('Ananya Gupta', 'ananya.g@gmail.com', 'Delhi', '2023-04-05');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> -- Insert Orders
+mysql> INSERT INTO Orders
+    -> (order_date, customer_id)
+    -> VALUES
+    -> ('2023-05-01', 1),
+    -> ('2023-05-03', 2),
+    -> ('2023-05-05', 1),
+    -> ('2023-06-01', 3);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> -- Insert Order_Details
+mysql> INSERT INTO Order_Details
+    -> (order_id, book_id, quantity_ordered, price_at_time_of_order)
+    -> VALUES
+    -> (1, 1, 1, 250.00),
+    -> (1, 4, 2, 200.00),
+    -> (2, 5, 1, 399.00),
+    -> (3, 2, 1, 300.00),
+    -> (4, 3, 1, 450.00);
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO Publishers (publisher_name, country)
+    -> VALUES
+    -> ('Penguin India', 'India'),
+    -> ('HarperCollins', 'USA'),
+    -> ('Westland Books', 'India');
+Query OK, 3 rows affected (0.03 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO Payments
+    -> (order_id, payment_date, payment_method, amount)
+    -> VALUES
+    -> (2, '2023-05-03', 'Credit Card', 400.00), 
+    -> (4, '2023-05-05', 'Cash', 300.00);
+    -> (1, '2023-05-01', 'UPI',450.00), 
+    -> (3, '2023-05-05', 'Cash', 300.00);
+Query OK, 4 rows affected (0.03 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> -- Verify Data
+mysql> SELECT * FROM Authors;
++-----------+----------------+------------------------------------------+
+| author_id | author_name    | bio                                      |
++-----------+----------------+------------------------------------------+
+|         1 | Chetan Bhagat  | Indian author known for 5 Point Someone. |
+|         2 | Arundhati Roy  | Winner of the Man Booker Prize.          |
+|         3 | R.K. Narayan   | Creator of Malgudi Days.                 |
+|         4 | Amish Tripathi | Known for the Shiva Trilogy.             |
++-----------+----------------+------------------------------------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Genres;
++----------+------------+
+| genre_id | genre_name |
++----------+------------+
+|        1 | Fiction    |
+|        2 | Mythology  |
+|        3 | History    |
+|        4 | Romance    |
++----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Customers;
++-------------+--------------+----------------------+-----------+------------+
+| customer_id | name         | email                | city      | join_date  |
++-------------+--------------+----------------------+-----------+------------+
+|           1 | Aarav Sharma | aarav@gmail.com      | Mumbai    | 2023-01-10 |
+|           2 | Diya Patel   | diya.p@yahoo.com     | Ahmedabad | 2023-02-15 |
+|           3 | Vihaan Reddy | vihaan.r@outlook.com | Hyderabad | 2023-03-20 |
+|           4 | Ananya Gupta | ananya.g@gmail.com   | Delhi     | 2023-04-05 |
++-------------+--------------+----------------------+-----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Books;
++---------+-------------------------+--------+----------------+-----------+----------+
+| book_id | title                   | price  | stock_quantity | author_id | genre_id |
++---------+-------------------------+--------+----------------+-----------+----------+
+|       1 | Five Point Someone      | 250.00 |             50 |         1 |        1 |
+|       2 | 2 States                | 300.00 |             40 |         1 |        4 |
+|       3 | The God of Small Things | 450.00 |             20 |         2 |        1 |
+|       4 | Malgudi Days            | 200.00 |            100 |         3 |        1 |
+|       5 | The Immortals of Meluha | 399.00 |             60 |         4 |        2 |
++---------+-------------------------+--------+----------------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Orders;
++----------+------------+-------------+
+| order_id | order_date | customer_id |
++----------+------------+-------------+
+|        1 | 2023-05-01 |           1 |
+|        2 | 2023-05-03 |           2 |
+|        3 | 2023-05-05 |           1 |
+|        4 | 2023-06-01 |           3 |
++----------+------------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Order_Details;
++-----------+----------+---------+------------------+------------------------+
+| detail_id | order_id | book_id | quantity_ordered | price_at_time_of_order |
++-----------+----------+---------+------------------+------------------------+
+|         1 |        1 |       1 |                1 |                 250.00 |
+|         2 |        1 |       4 |                2 |                 200.00 |
+|         3 |        2 |       5 |                1 |                 399.00 |
+|         4 |        3 |       2 |                1 |                 300.00 |
+|         5 |        4 |       3 |                1 |                 450.00 |
++-----------+----------+---------+------------------+------------------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM PUBLISHERS;
++--------------+----------------+---------+
+| publisher_id | publisher_name | country |
++--------------+----------------+---------+
+|            1 | Penguin India  | India   |
+|            2 | HarperCollins  | USA     |
+|            3 | Westland Books | India   |
++--------------+----------------+---------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT * FROM PAYMENTS;
++------------+----------+--------------+----------------+--------+
+| payment_id | order_id | payment_date | payment_method | amount |
++------------+----------+--------------+----------------+--------+
+|          1 |        2 | 2023-05-03   | Credit Card    | 400.00 |
+|          2 |        4 | 2023-05-05   | Cash           | 300.00 |
+|          3 |        1 | 2023-05-01   | UPI            | 450.00 |
+|          4 |        3 | 2023-05-05   | Cash           | 300.00 |
++------------+----------+--------------+----------------+--------+
+4 rows in set (0.00 sec)
+
+mysql> -- EASY QUERIES
+mysql> -- 1.show quantity ordered books
+mysql> SELECT ORDER_ID,QUANTITY_ORDERED FROM ORDER_DETAILS WHERE QUANTITY_ORDERED>1; 
++----------+------------------+
+| ORDER_ID | QUANTITY_ORDERED |
++----------+------------------+
+|        1 |                2 |
++----------+------------------+
+1 row in set (0.01 sec)
+
+mysql> -- 2.FIND HOW MANY MEMBERS ARE PAYMENT DONE 
+mysql> -- 2.Show all payment methods used for books
+mysql> SELECT ORDER_ID,PAYMENT_DATE,PAYMENT_METHOD FROM PAYMENTS WHERE AMOUNT>0; 
++----------+--------------+----------------+
+| ORDER_ID | PAYMENT_DATE | PAYMENT_METHOD |
++----------+--------------+----------------+
+|        2 | 2023-05-03   | Credit Card    |
+|        4 | 2023-05-05   | Cash           |
+|        1 | 2023-05-01   | UPI            |
+|        3 | 2023-05-05   | Cash           |
++----------+--------------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT ORDER_ID,PAYMENT_DATE,PAYMENT_METHOD FROM PAYMENTS WHERE AMOUNT>0 ORDER BY ORDER_ID ASC; 
++----------+--------------+----------------+
+| ORDER_ID | PAYMENT_DATE | PAYMENT_METHOD |
++----------+--------------+----------------+
+|        1 | 2023-05-01   | UPI            |
+|        2 | 2023-05-03   | Credit Card    |
+|        3 | 2023-05-05   | Cash           |
+|        4 | 2023-05-05   | Cash           |
++----------+--------------+----------------+
+4 rows in set (0.03 sec)
+
+mysql> -- 3.Show all orders placed in May
+mysql> ^C
+mysql> SELECT ORDER_ID,ORDER_DATE FROM ORDERS WHERE ORDER_DATE<'2023-06-01';
++----------+------------+
+| ORDER_ID | ORDER_DATE |
++----------+------------+
+|        1 | 2023-05-01 |
+|        2 | 2023-05-03 |
+|        3 | 2023-05-05 |
++----------+------------+
+3 rows in set (0.03 sec)
+
+mysql> SELECT * FROM ORDERS WHERE ORDER_DATE<'2023-06-01';
++----------+------------+-------------+
+| order_id | order_date | customer_id |
++----------+------------+-------------+
+|        1 | 2023-05-01 |           1 |
+|        2 | 2023-05-03 |           2 |
+|        3 | 2023-05-05 |           1 |
++----------+------------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> -- 4. Display books with stock greater than 50
+mysql> SELECT title, stock_quantity  FROM Books WHERE stock_quantity > 50;
++-------------------------+----------------+
+| title                   | stock_quantity |
++-------------------------+----------------+
+| Malgudi Days            |            100 |
+| The Immortals of Meluha |             60 |
++-------------------------+----------------+
+2 rows in set (0.01 sec)
+
+mysql> -- 5.Show the customers from hyderabad
+mysql> SELECT NAME,CUSTOMER_ID,CITY FROM CUSTOMERS WHERE CITY='HYDERABAD';
++--------------+-------------+-----------+
+| NAME         | CUSTOMER_ID | CITY      |
++--------------+-------------+-----------+
+| Vihaan Reddy |           3 | Hyderabad |
++--------------+-------------+-----------+
+1 row in set (0.00 sec)
+
+mysql> -- INTERMEDIATE QUESTIONS
+mysql> -- 6.Find the total books available in each genre
+mysql> SELECT GENRE_ID,GENRE_NAME,COUNT(GENRE_NAME) FROM GENRES
+    -> GROUP BY GENRE_ID;
++----------+------------+-------------------+
+| GENRE_ID | GENRE_NAME | COUNT(GENRE_NAME) |
++----------+------------+-------------------+
+|        1 | Fiction    |                 1 |
+|        2 | Mythology  |                 1 |
+|        3 | History    |                 1 |
+|        4 | Romance    |                 1 |
++----------+------------+-------------------+
+4 rows in set (0.02 sec)
+
+mysql> SELECT GENRE_ID,GENRE_NAME,COUNT(GENRE_NAME) AS TOTAL_GENRE FROM GENRES
+    -> GROUP BY GENRE_ID;
++----------+------------+-------------+
+| GENRE_ID | GENRE_NAME | TOTAL_GENRE |
++----------+------------+-------------+
+|        1 | Fiction    |           1 |
+|        2 | Mythology  |           1 |
+|        3 | History    |           1 |
+|        4 | Romance    |           1 |
++----------+------------+-------------+
+4 rows in set (0.01 sec)
+
+mysql> -- 2.Find total payment amount for each payment method
+mysql> SELECT PAYMENT_METHOD,SUM(AMOUNT)AS TOTAL_AMOUNT FROM PAYMENTS
+    -> GROUP BY PAYMENT_METHOD;
++----------------+--------------+
+| PAYMENT_METHOD | TOTAL_AMOUNT |
++----------------+--------------+
+| Credit Card    |       400.00 |
+| Cash           |       600.00 |
+| UPI            |       450.00 |
++----------------+--------------+
+3 rows in set (0.03 sec)
+
+mysql> -- 3.Find total orders placed by each books
+mysql> 
+mysql> SELECT BOOK_ID,SUM(QUANTITY_ORDERED)AS TOTAL_ORDERS FROM ORDER_DETAILS   
+    -> GROUP BY BOOK_ID;
++---------+--------------+
+| BOOK_ID | TOTAL_ORDERS |
++---------+--------------+
+|       1 |            1 |
+|       2 |            1 |
+|       3 |            1 |
+|       4 |            2 |
+|       5 |            1 |
++---------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> -- 4.Show payment methods with total amount greater than 300
+mysql> SELECT PAYMENT_METHOD, SUM(AMOUNT) AS TOTAL_AMOUNT FROM PAYMENTS
+    -> GROUP BY PAYMENT_METHOD
+    -> HAVING TOTAL_AMOUNT>300;
++----------------+--------------+
+| PAYMENT_METHOD | TOTAL_AMOUNT |
++----------------+--------------+
+| Credit Card    |       400.00 |
+| Cash           |       600.00 |
+| UPI            |       450.00 |
++----------------+--------------+
+3 rows in set (0.03 sec)
+
+mysql> -- 5.Show books ordered in one time
+mysql>
+mysql> SELECT BOOK_ID, COUNT(ORDER_ID) AS TOTAL_ORDERS FROM ORDER_DETAILS 
+    -> GROUP BY BOOK_ID
+    -> HAVING COUNT(ORDER_ID) > 0;
++---------+--------------+
+| BOOK_ID | TOTAL_ORDERS |
++---------+--------------+
+|       1 |            1 |
+|       2 |            1 |
+|       3 |            1 |
+|       4 |            1 |
+|       5 |            1 |
++---------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> -- ADVANCED QUESTIONS
+mysql> -- 1.SHOW THE TITLE OF THE BOOKS WITH GENRE NAMES
+mysql> SELECT B.TITLE,
+    -> G.GENRE_NAME FROM BOOKS B 
+    -> INNER JOIN GENRES G
+    -> ON B.GENRE_ID = G.GENRE_ID WHERE G.GENRE_NAME='FICTION';
++-------------------------+------------+
+| TITLE                   | GENRE_NAME |
++-------------------------+------------+
+| Five Point Someone      | Fiction    |
+| The God of Small Things | Fiction    |
+| Malgudi Days            | Fiction    |
++-------------------------+------------+
+3 rows in set (0.00 sec)
+
+mysql> 2.Find books whose price is greater than the lowest priced book
+    -> ^C
+mysql> -- 2.Find books whose price is greater than the lowest priced book
+mysql> SELECT TITLE, PRICE  FROM BOOKS 
+    -> WHERE PRICE >
+    -> (SELECT MIN(PRICE) FROM BOOKS);
++-------------------------+--------+
+| TITLE                   | PRICE  |
++-------------------------+--------+
+| Five Point Someone      | 250.00 |
+| 2 States                | 300.00 |
+| The God of Small Things | 450.00 |
+| The Immortals of Meluha | 399.00 |
++-------------------------+--------+
+4 rows in set (0.03 sec)
+
+mysql> -- 3.Show books ordered by customer name is Aarav Sharma
+mysql> SELECT B.TITLE  FROM BOOKS B 
+    -> JOIN ORDER_DETAILS D ON B.BOOK_ID = D.BOOK_ID 
+    -> JOIN ORDERS O  ON D.ORDER_ID = O.ORDER_ID 
+    -> JOIN CUSTOMERS C  ON O.CUSTOMER_ID = C.CUSTOMER_ID 
+    -> WHERE C.NAME = 'AARAV SHARMA';
++--------------------+
+| TITLE              |
++--------------------+
+| Five Point Someone |
+| Malgudi Days       |
+| 2 States           |
++--------------------+
+3 rows in set (0.03 sec)
+
+mysql> -- 4.Find customers who made payments greater than average payments
+mysql> SELECT DISTINCT C.NAME,
+    -> P.AMOUNT FROM CUSTOMERS C 
+    -> JOIN ORDERS O  ON C.CUSTOMER_ID = O.CUSTOMER_ID 
+    -> JOIN PAYMENTS P  ON O.ORDER_ID = P.ORDER_ID 
+    -> WHERE P.AMOUNT >
+    -> ( 
+    ->     SELECT AVG(AMOUNT)
+    ->     FROM PAYMENTS
+    -> ^C
+mysql> SELECT DISTINCT C.NAME,P.AMOUNT FROM CUSTOMERS C
+    -> JOIN ORDERS O  ON C.CUSTOMER_ID = O.CUSTOMER_ID 
+    -> JOIN PAYMENTS P  ON O.ORDER_ID = P.ORDER_ID 
+    -> WHERE P.AMOUNT >(
+    -> SELECT AVG(AMOUNT) FROM PAYMENTS);
++--------------+--------+
+| NAME         | AMOUNT |
++--------------+--------+
+| Diya Patel   | 400.00 |
+| Aarav Sharma | 450.00 |
++--------------+--------+
+2 rows in set (0.00 sec)
+
+mysql> -- 5.Display publisher names with their published books
+mysql> 
+mysql> SELECT P.PUBLISHER_NAME,B.TITLE FROM PUBLISHERS P
+    -> JOIN BOOKS B 
+    -> ON B.BOOK_ID = P.PUBLISHER_ID;
++----------------+-------------------------+
+| PUBLISHER_NAME | TITLE                   |
++----------------+-------------------------+
+| Penguin India  | Five Point Someone      |
+| HarperCollins  | 2 States                |
+| Westland Books | The God of Small Things |
++----------------+-------------------------+
+3 rows in set (0.00 sec)
+
+mysql>-- 6.show who published the books in which country
+mysql> SELECT A.AUTHOR_NAME,P.PUBLISHER_NAME,P.COUNTRY FROM AUTHORS A 
+    -> JOIN PUBLISHERS P
+    -> ON A.AUTHOR_ID=P.PUBLISHER_ID;
++---------------+----------------+---------+
+| AUTHOR_NAME   | PUBLISHER_NAME | COUNTRY |
++---------------+----------------+---------+
+| Chetan Bhagat | Penguin India  | India   |
+| Arundhati Roy | HarperCollins  | USA     |
+| R.K. Narayan  | Westland Books | India   |
++---------------+----------------+---------+
