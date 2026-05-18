@@ -1,0 +1,582 @@
+mysql> CREATE DATABASE IF NOT EXISTS bloodbank_db;
+Query OK, 1 row affected (0.02 sec)
+
+mysql> 
+mysql> USE bloodbank_db;
+Database changed
+mysql> -- 1.DONOR
+mysql> CREATE TABLE Donors (
+    ->     donor_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     donor_name VARCHAR(100),
+    ->     gender VARCHAR(10),
+    ->     age INT,
+    ->     blood_group VARCHAR(5),
+    ->     city VARCHAR(50),
+    ->     phone VARCHAR(15)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> -- 2. Patients
+mysql> CREATE TABLE Patients (
+    ->     patient_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     patient_name VARCHAR(100),
+    ->     blood_group VARCHAR(5),
+    ->     disease VARCHAR(100),
+    ->     city VARCHAR(50),
+    ->     phone VARCHAR(15)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> -- 3. Blood_Stock 
+mysql> CREATE TABLE Blood_Stock (
+    ->     stock_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     blood_group VARCHAR(5),
+    ->     units_available INT
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> -- 4. Donations 
+mysql> CREATE TABLE Donations (
+    ->     donation_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     donor_id INT,
+    ->     donation_date DATE,
+    ->     units_donated INT,
+    -> 
+    ->     FOREIGN KEY (donor_id)
+    ->     REFERENCES Donors(donor_id)
+    -> );
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> -- 5. Requests Table
+mysql> CREATE TABLE Requests (
+    ->     request_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     patient_id INT,
+    ->     blood_group_needed VARCHAR(5),
+    ->     units_required INT,
+    ->     request_date DATE,
+    -> 
+    ->     FOREIGN KEY (patient_id)
+    ->     REFERENCES Patients(patient_id)
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> -- 6. Blood_Issues Table
+mysql> CREATE TABLE Blood_Issues (
+    ->     issue_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     request_id INT,
+    ->     stock_id INT,
+    ->     issue_date DATE,
+    ->     units_issued INT,
+    -> 
+    ->     FOREIGN KEY (request_id)
+    ->     REFERENCES Requests(request_id),
+    -> 
+    ->     FOREIGN KEY (stock_id)
+    ->     REFERENCES Blood_Stock(stock_id)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> -- 7. Staff Table
+mysql> CREATE TABLE Staff (
+    ->     staff_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     staff_name VARCHAR(100),
+    ->     role VARCHAR(50),
+    ->     phone VARCHAR(15),
+    ->     shift_time VARCHAR(30)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> 
+mysql> DESC DONORS;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| donor_id    | int          | NO   | PRI | NULL    | auto_increment |
+| donor_name  | varchar(100) | YES  |     | NULL    |                |
+| gender      | varchar(10)  | YES  |     | NULL    |                |
+| age         | int          | YES  |     | NULL    |                |
+| blood_group | varchar(5)   | YES  |     | NULL    |                |
+| city        | varchar(50)  | YES  |     | NULL    |                |
+| phone       | varchar(15)  | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+7 rows in set (0.05 sec)
+
+mysql> DESC BLOOD_ISSUES;
++--------------+------+------+-----+---------+----------------+
+| Field        | Type | Null | Key | Default | Extra          |
++--------------+------+------+-----+---------+----------------+
+| issue_id     | int  | NO   | PRI | NULL    | auto_increment |
+| request_id   | int  | YES  | MUL | NULL    |                |
+| stock_id     | int  | YES  | MUL | NULL    |                |
+| issue_date   | date | YES  |     | NULL    |                |
+| units_issued | int  | YES  |     | NULL    |                |
++--------------+------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT INTO Donors
+    -> (donor_name, gender, age, blood_group, city, phone)
+    -> VALUES
+    -> ('Rahul Sharma', 'Male', 25, 'A+', 'Hyderabad', '9876543210'),
+    -> ('Priya Reddy', 'Female', 22, 'B+', 'Mumbai', '9876543222'),
+    -> ('Arjun Kumar', 'Male', 30, 'O+', 'Chennai', '9876543333'),
+    -> ('Kiran', 'Male', 28, 'AB+', 'Bangalore', '9876501111'),
+    -> ('Sneha', 'Female', 24, 'A-', 'Hyderabad', '9876502222'),
+    -> ('Vamsi', 'Male', 31, 'B-', 'Vijayawada', '9876503333'),
+    -> ('Meghana', 'Female', 27, 'O-', 'Chennai', '9876504444'),
+    -> ('Tarun', 'Male', 29, 'A+', 'Delhi', '9876505555');
+Query OK, 8 rows affected (0.03 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> INSERT INTO Patients
+    -> (patient_name, blood_group, disease, city, phone)
+    -> VALUES
+    -> ('Ananya', 'A+', 'Dengue', 'Delhi', '9991112222'),
+    -> ('Rohit', 'O+', 'Accident', 'Pune', '9993334444'), 
+    -> ('Kavya', 'B+', 'Surgery', 'Hyderabad', '9995551111'),
+    -> ('Ajay', 'AB+', 'Accident', 'Mumbai', '9995552222'),
+    -> ('Pooja', 'O-', 'Cancer', 'Bangalore', '9995553333'),
+    -> ('Ramesh', 'A-', 'Anemia', 'Chennai', '9995554444'),
+    -> ('Divya', 'B-', 'Dengue', 'Delhi', '9995555555');
+
+Query OK, 7 rows affected (0.01 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> INSERT INTO Blood_Stock
+    -> (blood_group, units_available)
+    -> VALUES
+    -> ('A+', 20),
+    -> ('B+', 15),
+    -> ('O+', 30),
+    -> ('AB+', 10),
+    -> ('A-', 12),
+    -> ('B-', 8),
+    -> ('O-', 14);
+Query OK, 7 rows affected (0.03 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Donations
+    -> (donor_id, donation_date, units_donated)
+    -> VALUES
+    -> (1, '2025-08-01', 2),
+    -> (2, '2025-08-02', 1),
+    -> (3, '2025-08-03', 3),
+    -> (4, '2025-08-05', 2),
+    -> (5, '2025-08-06', 1),
+    -> (6, '2025-08-07', 2),
+    -> (7, '2025-08-08', 1),
+    -> (8, '2025-08-09', 3);
+Query OK, 8 rows affected (0.03 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> 
+mysql> 
+mysql> INSERT INTO Requests
+    -> (patient_id, blood_group_needed, units_required, request_date)
+    -> VALUES
+    -> (1, 'A+', 2, '2025-08-10'),
+    -> (2, 'O+', 1, '2025-08-11'),
+    -> (3, 'B+', 2, '2025-08-12'),
+    -> (4, 'AB+', 1, '2025-08-13'),
+    -> (5, 'O-', 3, '2025-08-14'),
+    -> (6, 'A-', 2, '2025-08-15');
+Query OK, 6 rows affected (0.03 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Blood_Issues
+    -> (request_id, stock_id, issue_date, units_issued)
+    -> VALUES
+    -> (1, 1, '2025-08-10', 2),
+    -> (2, 3, '2025-08-11', 1);
+Query OK, 2 rows affected (0.03 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Blood_Issues
+    -> (request_id, stock_id, issue_date, units_issued)
+    -> VALUES
+    -> (3, 2, '2025-08-12', 2),
+    -> (4, 4, '2025-08-13', 1),
+    -> (5, 7, '2025-08-14', 3),
+    -> (6, 5, '2025-08-15', 2);
+Query OK, 4 rows affected (0.03 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Staff
+    -> (staff_name, role, phone, shift_time)
+    -> VALUES
+    -> ('Suresh', 'Manager', '8881112222', 'Morning'),
+    -> ('Keerthi', 'Lab Technician', '8883334444', 'Evening'),
+    -> ('Naveen', 'Receptionist', '8885551111', 'Morning'),
+    -> ('Lakshmi', 'Nurse', '8885552222', 'Night'),
+    -> ('Harish', 'Lab Assistant', '8885553333', 'Evening');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Donors;
++----------+--------------+--------+------+-------------+------------+------------+
+| donor_id | donor_name   | gender | age  | blood_group | city       | phone      |
++----------+--------------+--------+------+-------------+------------+------------+
+|        1 | Rahul Sharma | Male   |   25 | A+          | Hyderabad  | 9876543210 |
+|        2 | Priya Reddy  | Female |   22 | B+          | Mumbai     | 9876543222 |
+|        3 | Arjun Kumar  | Male   |   30 | O+          | Chennai    | 9876543333 |
+|        4 | Kiran        | Male   |   28 | AB+         | Bangalore  | 9876501111 |
+|        5 | Sneha        | Female |   24 | A-          | Hyderabad  | 9876502222 |
+|        6 | Vamsi        | Male   |   31 | B-          | Vijayawada | 9876503333 |
+|        7 | Meghana      | Female |   27 | O-          | Chennai    | 9876504444 |
+|        8 | Tarun        | Male   |   29 | A+          | Delhi      | 9876505555 |
++----------+--------------+--------+------+-------------+------------+------------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Blood_Stock;
++----------+-------------+-----------------+
+| stock_id | blood_group | units_available |
++----------+-------------+-----------------+
+|        1 | A+          |              20 |
+|        2 | B+          |              15 |
+|        3 | O+          |              30 |
+|        4 | AB+         |              10 |
+|        5 | A-          |              12 |
+|        6 | B-          |               8 |
+|        7 | O-          |              14 |
++----------+-------------+-----------------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT * FROM PATIENTS;
++------------+--------------+-------------+----------+-----------+------------+
+| patient_id | patient_name | blood_group | disease  | city      | phone      |
++------------+--------------+-------------+----------+-----------+------------+
+|          1 | Ananya       | A+          | Dengue   | Delhi     | 9991112222 |
+|          2 | Rohit        | O+          | Accident | Pune      | 9993334444 |
+|          3 | Kavya        | B+          | Surgery  | Hyderabad | 9995551111 |
+|          4 | Ajay         | AB+         | Accident | Mumbai    | 9995552222 |
+|          5 | Pooja        | O-          | Cancer   | Bangalore | 9995553333 |
+|          6 | Ramesh       | A-          | Anemia   | Chennai   | 9995554444 |
+|          7 | Divya        | B-          | Dengue   | Delhi     | 9995555555 |
++------------+--------------+-------------+----------+-----------+------------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT * FROM DONATIONS;
++-------------+----------+---------------+---------------+
+| donation_id | donor_id | donation_date | units_donated |
++-------------+----------+---------------+---------------+
+|           1 |        1 | 2025-08-01    |             2 |
+|           2 |        2 | 2025-08-02    |             1 |
+|           3 |        3 | 2025-08-03    |             3 |
+|           4 |        4 | 2025-08-05    |             2 |
+|           5 |        5 | 2025-08-06    |             1 |
+|           6 |        6 | 2025-08-07    |             2 |
+|           7 |        7 | 2025-08-08    |             1 |
+|           8 |        8 | 2025-08-09    |             3 |
++-------------+----------+---------------+---------------+
+8 rows in set (0.00 sec)
+
+mysql> SELECT * FROM REQUESTS;
++------------+------------+--------------------+----------------+--------------+
+| request_id | patient_id | blood_group_needed | units_required | request_date |
++------------+------------+--------------------+----------------+--------------+
+|          1 |          1 | A+                 |              2 | 2025-08-10   |
+|          2 |          2 | O+                 |              1 | 2025-08-11   |
+|          3 |          3 | B+                 |              2 | 2025-08-12   |
+|          4 |          4 | AB+                |              1 | 2025-08-13   |
+|          5 |          5 | O-                 |              3 | 2025-08-14   |
+|          6 |          6 | A-                 |              2 | 2025-08-15   |
++------------+------------+--------------------+----------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Blood_ISSUES;
++----------+------------+----------+------------+--------------+
+| issue_id | request_id | stock_id | issue_date | units_issued |
++----------+------------+----------+------------+--------------+
+|        1 |          1 |        1 | 2025-08-10 |            2 |
+|        2 |          2 |        3 | 2025-08-11 |            1 |
+|        3 |          3 |        2 | 2025-08-12 |            2 |
+|        4 |          4 |        4 | 2025-08-13 |            1 |
+|        5 |          5 |        7 | 2025-08-14 |            3 |
+|        6 |          6 |        5 | 2025-08-15 |            2 |
++----------+------------+----------+------------+--------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT * FROM STAFF;
++----------+------------+----------------+------------+------------+
+| staff_id | staff_name | role           | phone      | shift_time |
++----------+------------+----------------+------------+------------+
+|        1 | Suresh     | Manager        | 8881112222 | Morning    |
+|        2 | Keerthi    | Lab Technician | 8883334444 | Evening    |
+|        3 | Naveen     | Receptionist   | 8885551111 | Morning    |
+|        4 | Lakshmi    | Nurse          | 8885552222 | Night      |
+|        5 | Harish     | Lab Assistant  | 8885553333 | Evening    |
++----------+------------+----------------+------------+------------+
+5 rows in set (0.00 sec)
+
+mysql> -- EASY QUERIES
+mysql> 
+mysql> -- 1.show the donor Names with Blood Group
+mysql> SELECT DONOR_NAME,BLOOD_GROUP FROM DONORS;
++--------------+-------------+
+| DONOR_NAME   | BLOOD_GROUP |
++--------------+-------------+
+| Rahul Sharma | A+          |
+| Priya Reddy  | B+          |
+| Arjun Kumar  | O+          |
+| Kiran        | AB+         |
+| Sneha        | A-          |
+| Vamsi        | B-          |
+| Meghana      | O-          |
+| Tarun        | A+          |
++--------------+-------------+
+8 rows in set (0.00 sec)
+
+mysql> -- 2.FIND THE SUM OF UNITS_ISSUED IN BLOOD_BANK
+mysql> SELECT SUM(UNITS_ISSUED) AS TOTAL_ISSUED FROM BLOOD_ISSUES;
++--------------+
+| TOTAL_ISSUED |
++--------------+
+|           11 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> -- 3.Show patients who need A- blood
+mysql> SELECT PATIENT_NAME FROM PATIENTS WHERE BLOOD_GROUP = 'A-';
++--------------+
+| PATIENT_NAME |
++--------------+
+| Ramesh       |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> 
+mysql> -- 4.SHOW THE STAFFS WHO ARE THE EVENING SHIFT_NAME
+mysql>
+mysql> SELECT STAFF_NAME,SHIFT_TIME FROM STAFF WHERE SHIFT_TIME='EVENING';
++------------+------------+
+| STAFF_NAME | SHIFT_TIME |
++------------+------------+
+| Keerthi    | Evening    |
+| Harish     | Evening    |
++------------+------------+
+2 rows in set (0.00 sec)
+
+mysql> -- 5.SHOW THE DONATIONS WHO DONATED MORE THAN ONE UNIT
+mysql> SELECT DONOR_ID,UNITS_DONATED FROM DONATIONS WHERE UNITS_DONATED>1;
++----------+---------------+
+| DONOR_ID | UNITS_DONATED |
++----------+---------------+
+|        1 |             2 |
+|        3 |             3 |
+|        4 |             2 |
+|        6 |             2 |
+|        8 |             3 |
++----------+---------------+
+5 rows in set (0.00 sec)
+
+mysql> -- INTERMEDIATE QUESTIONS
+mysql> -- 1.FIND THE REQUIRED BLOOD GROUP IN BLOOD BANK
+mysql>
+mysql> SELECT BLOOD_GROUP_NEEDED, COUNT(*) AS REQUEST_COUNT  FROM REQUESTS 
+    -> GROUP BY BLOOD_GROUP_NEEDED
+    -> ORDER BY REQUEST_COUNT DESC;
++--------------------+---------------+
+| BLOOD_GROUP_NEEDED | REQUEST_COUNT |
++--------------------+---------------+
+| A+                 |             1 |
+| O+                 |             1 |
+| B+                 |             1 |
+| AB+                |             1 |
+| O-                 |             1 |
+| A-                 |             1 |
++--------------------+---------------+
+6 rows in set (0.00 sec)
+
+mysql> -- 2.FIND REQUESTS A SPECIFIC DATE
+mysql> SELECT *  FROM REQUESTS WHERE REQUEST_DATE > '2025-08-12';
++------------+------------+--------------------+----------------+--------------+
+| request_id | patient_id | blood_group_needed | units_required | request_date |
++------------+------------+--------------------+----------------+--------------+
+|          4 |          4 | AB+                |              1 | 2025-08-13   |
+|          5 |          5 | O-                 |              3 | 2025-08-14   |
+|          6 |          6 | A-                 |              2 | 2025-08-15   |
++------------+------------+--------------------+----------------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT PATIENT_ID, REQUEST_DATE FROM REQUESTS WHERE REQUEST_DATE > '2025-08-12';
++------------+--------------+
+| PATIENT_ID | REQUEST_DATE |
++------------+--------------+
+|          4 | 2025-08-13   |
+|          5 | 2025-08-14   |
+|          6 | 2025-08-15   |
++------------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> -- 3.SHOW THE DAILY BLOOD ISSUE REPORT
+mysql> SELECT ISSUE_DATE,SUM(UNITS_ISSUED) AS TOTAL_UNITS 
+    -> FROM BLOOD_ISSUES
+    -> GROUP BY ISSUE_DATE;
++------------+-------------+
+| ISSUE_DATE | TOTAL_UNITS |
++------------+-------------+
+| 2025-08-10 |           2 |
+| 2025-08-11 |           1 |
+| 2025-08-12 |           2 |
+| 2025-08-13 |           1 |
+| 2025-08-14 |           3 |
+| 2025-08-15 |           2 |
++------------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> -- 4. COUNT NUMBER OF REQUESTS EACH PATIENT
+mysql>
+mysql> SELECT PATIENT_ID, COUNT(*) AS TOTAL_REQUESTS
+    -> FROM REQUESTS
+    -> GROUP BY PATIENT_ID
+    -> HAVING COUNT(*) <2;
++------------+----------------+
+| PATIENT_ID | TOTAL_REQUESTS |
++------------+----------------+
+|          1 |              1 |
+|          2 |              1 |
+|          3 |              1 |
+|          4 |              1 |
+|          5 |              1 |
+|          6 |              1 |
++------------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> -- 5.SHOW THE BLOOD GROUPS HAVING MORE THAN 3 DONORS
+mysql> 
+mysql> SELECT BLOOD_GROUP, COUNT(*) AS TOTAL  FROM DONORS 
+    -> GROUP BY BLOOD_GROUP
+    -> HAVING COUNT(*) < 3;
++-------------+-------+
+| BLOOD_GROUP | TOTAL |
++-------------+-------+
+| A+          |     2 |
+| B+          |     1 |
+| O+          |     1 |
+| AB+         |     1 |
+| A-          |     1 |
+| B-          |     1 |
+| O-          |     1 |
++-------------+-------+
+7 rows in set (0.00 sec)
+
+mysql> -- 6.SHOW THE REQUESTS WHERE TOTAL ISSUED UNITS PER REQUEST IS MORE THAN 2
+mysql> SELECT REQUEST_ID, SUM(UNITS_ISSUED) AS TOTAL_ISSUED  FROM BLOOD_ISSUES 
+    -> GROUP BY REQUEST_ID
+    -> HAVING SUM(UNITS_ISSUED) > 2;
++------------+--------------+
+| REQUEST_ID | TOTAL_ISSUED |
++------------+--------------+
+|          5 |            3 |
++------------+--------------+
+1 row in set (0.00 sec)
+
+mysql> -- ADVANCED QUESTIONS
+mysql> -- 1.FIND BLOOD GROUP WITH HIGHEST STOCK
+mysql> SELECT BLOOD_GROUP, UNITS_AVAILABLE FROM BLOOD_STOCK
+    -> ORDER BY UNITS_AVAILABLE DESC
+    -> LIMIT 1;
++-------------+-----------------+
+| BLOOD_GROUP | UNITS_AVAILABLE |
++-------------+-----------------+
+| O+          |              30 |
++-------------+-----------------+
+1 row in set (0.00 sec)
+
+mysql> -- 2. FIND PATIENTS WHOSE REQUEST IS FULFILLED
+mysql> SELECT R.REQUEST_ID,R.UNITS_REQUIRED,SUM(B.UNITS_ISSUED) AS TOTAL_ISSUED FROM REQUESTS R
+    -> JOIN BLOOD_ISSUES B
+    -> ON R.REQUEST_ID = B.REQUEST_ID
+    -> GROUP BY R.REQUEST_ID
+    -> HAVING TOTAL_ISSUED >= R.UNITS_REQUIRED;
++------------+----------------+--------------+
+| REQUEST_ID | UNITS_REQUIRED | TOTAL_ISSUED |
++------------+----------------+--------------+
+|          1 |              2 |            2 |
+|          2 |              1 |            1 |
+|          3 |              2 |            2 |
+|          4 |              1 |            1 |
+|          5 |              3 |            3 |
+|          6 |              2 |            2 |
++------------+----------------+--------------+
+6 rows in set (0.03 sec)
+
+mysql> -- 3.PATIENTS WHO NEVER RECEIVED BLOOD
+mysql> SELECT P.PATIENT_NAME FROM PATIENTS P
+    -> WHERE P.PATIENT_ID NOT IN (SELECT R.PATIENT_ID FROM REQUESTS R
+    -> JOIN BLOOD_ISSUES B ON R.REQUEST_ID = B.REQUEST_ID);
++--------------+
+| PATIENT_NAME |
++--------------+
+| Divya        |
++--------------+
+1 row in set (0.03 sec)
+
+mysql> -- 4.SHOW THE MOST ACTIVE DONOR IN THE BLOOD BANK
+mysql> SELECT D.DONOR_NAME,SUM(DO.UNITS_DONATED) AS TOTAL_UNITS FROM DONORS D
+    -> JOIN DONATIONS DO ON D.DONOR_ID = DO.DONOR_ID
+    -> GROUP BY D.DONOR_NAME
+    -> ORDER BY TOTAL_UNITS DESC LIMIT 1;
++------------+-------------+
+| DONOR_NAME | TOTAL_UNITS |
++------------+-------------+
+| Tarun      |           3 |
++------------+-------------+
+1 row in set (0.00 sec)
+
+mysql> -- 5.SHOW THE DONORS MATCHING PATIENT BLOOD GROUP
+mysql> SELECT DISTINCT D.DONOR_ID, D.DONOR_NAME FROM DONORS D
+    -> JOIN DONATIONS DN ON D.DONOR_ID = DN.DONOR_ID
+    -> JOIN REQUESTS R ON R.BLOOD_GROUP_NEEDED = D.BLOOD_GROUP
+    -> WHERE R.PATIENT_ID = 1;
++----------+--------------+
+| DONOR_ID | DONOR_NAME   |
++----------+--------------+
+|        1 | Rahul Sharma |
+|        8 | Tarun        |
++----------+--------------+
+2 rows in set (0.03 sec)
+
+mysql> -- 6.SHOW THE DONORS ABOVE AVERAGE DONATION
+mysql> SELECT DONOR_ID, SUM(UNITS_DONATED) AS TOTAL FROM DONATIONS
+    -> GROUP BY DONOR_ID
+    -> HAVING SUM(UNITS_DONATED) > (SELECT AVG(TOTAL_UNITS)
+    -> FROM (SELECT SUM(UNITS_DONATED) AS TOTAL_UNITS
+    -> FROM DONATIONS GROUP BY DONOR_ID) AS AVG_TABLE);
++----------+-------+
+| DONOR_ID | TOTAL |
++----------+-------+
+|        1 |     2 |
+|        3 |     3 |
+|        4 |     2 |
+|        6 |     2 |
+|        8 |     3 |
++----------+-------+
+5 rows in set (0.03 sec)
+
+mysql> 
+mysql> 
+mysql> -- 7.FIND THE PATIENT(S) WITH THE HIGHEST NUMBER OF BLOOD ISSUES ISSUED
+mysql> SELECT P.PATIENT_ID, P.PATIENT_NAME, COUNT(*) AS TOTAL_ISSUES FROM PATIENTS P
+    -> JOIN REQUESTS R ON P.PATIENT_ID = R.PATIENT_ID
+    -> JOIN BLOOD_ISSUES BI ON R.REQUEST_ID = BI.REQUEST_ID
+    -> GROUP BY P.PATIENT_ID, P.PATIENT_NAME
+    -> HAVING COUNT(*) = (
+    -> SELECT MAX(ISSUE_COUNT)FROM (SELECT COUNT(*) AS ISSUE_COUNT FROM PATIENTS P2
+    -> JOIN REQUESTS R2 ON P2.PATIENT_ID = R2.PATIENT_ID
+    -> JOIN BLOOD_ISSUES BI2 ON R2.REQUEST_ID = BI2.REQUEST_ID
+    -> GROUP BY P2.PATIENT_ID) AS TEMP);
++------------+--------------+--------------+
+| PATIENT_ID | PATIENT_NAME | TOTAL_ISSUES |
++------------+--------------+--------------+
+|          1 | Ananya       |            1 |
+|          2 | Rohit        |            1 |
+|          3 | Kavya        |            1 |
+|          4 | Ajay         |            1 |
+|          5 | Pooja        |            1 |
+|          6 | Ramesh       |            1 |
++------------+--------------+--------------+
+6 rows in set (0.03 sec)
+
+mysql>
