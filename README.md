@@ -97,10 +97,10 @@ Maintains staff information and operational handling.
 ##TECHNOLOGIES USED:-
 -MySQL
 -SQL Queries
-=ER Diagram Design
+-ER Diagram Design
 -GitHub
 
--->DATABASE CONCEPTS USED:-
+##DATABASE CONCEPTS USED:-
 CREATE, INSERT, SELECT
 WHERE clause and operators
 Aggregate functions
