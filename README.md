@@ -1,4 +1,5 @@
 ***ONLINE BOOKSTORE MANAGEMENT SYSTEM***
+
 The Online Bookstore Management System is a MySQL database project developed to manage books, authors, genres, publishers, customers, orders, payments, and order details efficiently. This project helps in storing and organizing bookstore information such as book records, customer orders, payment details, and stock management. The database is designed using relational tables with Primary Keys and Foreign Keys to maintain proper relationships between entities.
 
 -->FEATURES:-
@@ -65,6 +66,7 @@ README.md
 -------------------------------------
 
 **BLOOD BANK MANAGEMENT SYSTEM**
+
 The Blood Bank Management System is a MySQL database project developed to manage donors, patients, blood requests, blood stock, donations, staff, and blood issue details efficiently. This project helps in storing and organizing blood bank information such as donor records, patient requests, blood availability, and issued blood details. The database is designed using relational tables with Primary Keys and Foreign Keys to maintain proper relationships between entities.
 
 -->FEATURES:-
